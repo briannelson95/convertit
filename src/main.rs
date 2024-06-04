@@ -54,7 +54,7 @@ fn build_ui() -> impl Widget<AppState> {
 fn main() {
     let main_window = WindowDesc::new(build_ui())
         .title("Image Converter")
-        .window_size((400.0, 300.0));
+        .window_size((800.0, 400.0));
 
     let initial_state = AppState {
         input_path: "".into(),
