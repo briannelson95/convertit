@@ -20,14 +20,28 @@ const OPEN_OUTPUT: Selector<()> = Selector::new("open-output");
 fn build_ui() -> impl Widget<AppState> {
     let input_label = Label::new("Input Path:");
     let input_textbox = TextBox::new().lens(AppState::input_path);
-    let input_browse_button = Button::new("Browse...").on_click(|ctx, _data, _env| {
-        ctx.submit_command(Command::new(OPEN_INPUT, (), Target::Auto));
+    let input_browse_button = Button::new("Browse...").on_click(|_ctx, data: &mut AppState, _env| {
+        if let Some(path) = FileDialog::new()
+            .set_location("~/Desktop")
+            // .add_filter("PNG Image", &["png"])
+            .add_filter("JPEG Image", &["jpg", "jpeg"])
+            .show_open_single_file()
+            .unwrap()
+        {
+            data.input_path = path.to_string_lossy().to_string();
+        }
     });
 
     let output_label = Label::new("Output Path:");
     let output_textbox = TextBox::new().lens(AppState::output_path);
-    let output_browse_button = Button::new("Browse...").on_click(|ctx, _data, _env| {
-        ctx.submit_command(Command::new(OPEN_OUTPUT, (), Target::Auto));
+    let output_browse_button = Button::new("Browse...").on_click(|_ctx, data: &mut AppState, _env| {
+        if let Some(path) = FileDialog::new()
+            .set_location("~/Desktop")
+            .show_open_single_dir()
+            .unwrap()
+        {
+            data.output_path = path.to_string_lossy().to_string();
+        }
     });
 
     let quality_label = Label::new("Quality:");
@@ -64,7 +78,7 @@ fn build_ui() -> impl Widget<AppState> {
 
 fn main() {
     let main_window = WindowDesc::new(build_ui())
-        .title("Image Converter")
+        .title("ConvertIt")
         .window_size((800.0, 400.0));
 
     let initial_state = AppState {
@@ -73,29 +87,6 @@ fn main() {
         quality: "90.0".into(),
         status: "".into(),
     };
-
-    let path = FileDialog::new()
-        .set_location("~/Desktop")
-        .add_filter("PNG Image", &["png"])
-        .add_filter("JPEG Image", &["jpg", "jpeg"])
-        .show_open_single_file()
-        .unwrap();
-
-    let path = match path {
-        Some(path) => path,
-        None => return,
-    };
-
-    let yes = MessageDialog::new()
-        .set_type(MessageType::Info)
-        .set_title("Do you want to open the file?")
-        .set_text(&format!("{:#?}", path))
-        .show_confirm()
-        .unwrap();
-
-    if yes {
-        print!("Working")
-    }
 
     AppLauncher::with_window(main_window)
         .launch(initial_state)
