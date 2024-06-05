@@ -1,7 +1,8 @@
-use druid::commands::SHOW_OPEN_PANEL;
-use druid::widget::{Button, Flex, Label, Slider, TextBox};
-use druid::{AppLauncher, Command, Data, DelegateCtx, Env, EventCtx, Lens, Selector, Target, Widget, WidgetExt, WindowDesc};
-use native_dialog::{FileDialog, MessageDialog, MessageType};
+use druid::{
+    widget::{Button, Flex, Label, Slider, TextBox,},
+    AppLauncher, Data, Env, EventCtx, Lens, Widget, WidgetExt, WindowDesc,
+};
+use native_dialog::{FileDialog,};
 use std::path::PathBuf;
 mod converter;
 mod parse_lens;
@@ -14,17 +15,14 @@ struct AppState {
     status: String,
 }
 
-const OPEN_INPUT: Selector<()> = Selector::new("open-input");
-const OPEN_OUTPUT: Selector<()> = Selector::new("open-output");
-
 fn build_ui() -> impl Widget<AppState> {
     let input_label = Label::new("Input Path:");
     let input_textbox = TextBox::new().lens(AppState::input_path);
+
     let input_browse_button = Button::new("Browse...").on_click(|_ctx, data: &mut AppState, _env| {
         if let Some(path) = FileDialog::new()
             .set_location("~/Desktop")
-            // .add_filter("PNG Image", &["png"])
-            .add_filter("JPEG Image", &["jpg", "jpeg"])
+            .add_filter("Image Files", &["png", "jpg", "jpeg"])
             .show_open_single_file()
             .unwrap()
         {
@@ -63,6 +61,7 @@ fn build_ui() -> impl Widget<AppState> {
 
             ctx.request_update();
         });
+    
 
     Flex::column()
         .with_child(input_label)
@@ -84,7 +83,7 @@ fn main() {
     let initial_state = AppState {
         input_path: "".into(),
         output_path: "".into(),
-        quality: "90.0".into(),
+        quality: "80.0".into(),
         status: "".into(),
     };
 
