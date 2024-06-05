@@ -17,4 +17,4 @@ Desktop image converter built in Rust.
 - [ ] Add image preview for single image conversion
 
 ### Bulk Conversion
-**details to come**
+*details to come*
